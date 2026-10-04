@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fae8ff 100%);
+            min-height: 100vh;
+        }
+        .font-pacifico {
+            font-family: 'Pacifico', cursive;
+        }
+        @keyframes shake {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            20% { transform: scale(1.08) rotate(-4deg); }
+            40% { transform: scale(1.12) rotate(4deg); }
+            60% { transform: scale(1.08) rotate(-2deg); }
+            80% { transform: scale(1.05) rotate(2deg); }
+        }
+        .cake-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+        .float-animation {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(244, 114, 182, 0.15);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex items-center justify-center p-4 sm:p-6 text-gray-800">
+
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <main id="appContainer" class="w-full max-w-xl mx-auto relative min-h-[600px] flex items-center justify-center">
+
+        <!-- ================= PAGE 1: CAKE INTERACTION ================= -->
+        <div id="pageCake" class="w-full text-center transition-all duration-700 transform opacity-100 scale-100 flex flex-col items-center">
+            
+            <div class="mb-4">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-pink-100 text-pink-600 font-medium text-sm tracking-wide shadow-sm">
+                    <i class="fa-solid fa-gift mr-2"></i>亲爱的冰,祝你20岁生日快乐!
+                </span>
+                <h1 class="text-3xl sm:text-4xl font-bold font-pacifico text-pink-600 mt-2">Happy Birthday</h1><br>
+                <p class="text-gray-500 text-sm mt-1">连续点击蛋糕，触发生日惊喜大爆炸！</p>
+            </div>
+
+            <!-- Clickable Cake Container -->
+            <div class="relative my-8 cursor-pointer group select-none" id="cakeWrapper" onclick="handleCakeClick()">
+                <div class="absolute -inset-4 bg-gradient-to-r from-pink-400 via-purple-400 to-pink-500 rounded-full blur-xl opacity-40 group-hover:opacity-75 transition duration-500 animate-pulse"></div>
+                
+                <div class="relative float-animation transition-transform duration-150" id="cakeElement">
+                    <svg class="w-64 h-64 sm:w-72 sm:h-72 drop-shadow-2xl mx-auto" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="256" cy="420" rx="200" ry="36" fill="#E2E8F0" />
+                        <ellipse cx="256" cy="415" rx="180" ry="26" fill="#F1F5F9" />
+                        
+                        <path d="M116 330C116 357.614 179.627 380 256 380C332.373 380 396 357.614 396 330V400C396 427.614 332.373 450 256 450C179.627 450 116 427.614 116 400V330Z" fill="#F472B6" />
+                        <path d="M116 330C116 357.614 179.627 380 256 380C332.373 380 396 357.614 396 330V360C396 387.614 332.373 410 256 410C179.627 410 116 387.614 116 360V330Z" fill="#EC4899" />
+                        <path d="M116 330C140 365 180 365 200 330C220 365 260 365 280 330C300 365 340 365 396 330V345C340 380 300 380 280 345C260 380 220 380 200 345C180 380 140 380 116 345V330Z" fill="#FDF2F8" />
+
+                        <path d="M136 210C136 232.091 191.627 250 260 250C328.373 250 384 232.091 384 210V280C384 302.091 328.373 320 260 320C191.627 320 136 302.091 136 280V210Z" fill="#FBBF24" />
+                        <path d="M136 210C136 232.091 191.627 250 260 250C328.373 250 384 232.091 384 210V240C384 262.091 328.373 280 260 280C191.627 280 136 262.091 136 240V210Z" fill="#F59E0B" />
+                        <path d="M136 210C155 240 185 240 200 210C215 240 245 240 260 210C275 240 305 240 384 210V225C305 255 275 255 260 225C245 255 215 255 200 225C185 255 155 255 136 225V210Z" fill="#FEF3C7" />
+
+                        <path d="M166 100C166 117.673 207.313 132 258.333 132C309.354 132 350.667 117.673 350.667 100V160C350.667 177.673 309.354 192 258.333 192C207.313 192 166 177.673 166 160V100Z" fill="#60A5FA" />
+                        <path d="M166 100C166 117.673 207.313 132 258.333 132C309.354 132 350.667 117.673 350.667 100V130C350.667 147.673 309.354 162 258.333 162C207.313 162 166 147.673 166 130V100Z" fill="#3B82F6" />
+                        <path d="M166 100C180 125 210 125 230 100C250 125 280 125 350 100V115C280 140 250 140 230 115C210 140 180 140 166 115V100Z" fill="#EFF6FF" />
+
+                        <rect x="210" y="45" width="14" height="60" rx="7" fill="#F43F5E" />
+                        <ellipse cx="217" cy="45" rx="7" ry="3" fill="#FB7185" />
+                        <rect x="290" y="45" width="14" height="60" rx="7" fill="#F43F5E" />
+                        <ellipse cx="297" cy="45" rx="7" ry="3" fill="#FB7185" />
+
+                        <path d="M217 20C217 20 205 32 205 38C205 45 211 48 217 48C223 48 229 45 229 38C229 32 217 20 217 20Z" fill="#FBBF24" />
+                        <path d="M217 26C217 26 211 34 211 38C211 41 214 43 217 43C220 43 223 41 223 38C223 34 217 26 217 26Z" fill="#FEE140" />
+
+                        <path d="M297 20C297 20 285 32 285 38C285 45 291 48 297 48C303 48 309 45 309 38C309 32 297 20 297 20Z" fill="#FBBF24" />
+                        <path d="M297 26C297 26 291 34 291 38C291 41 294 43 297 43C300 43 303 41 303 38C303 34 297 26 297 26Z" fill="#FEE140" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-64 max-w-full mx-auto bg-white/80 rounded-full h-4 p-0.5 shadow-inner border border-pink-200">
+                <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            <p class="text-xs text-pink-500 font-medium mt-2" id="clickCounterText">已点击: 0 / 10 次</p>
+        </div>
+
+
+        <!-- ================= PAGE 2: BIRTHDAY BLESSING ================= -->
+        <div id="pageGreeting" class="w-full text-center hidden opacity-0 transition-all duration-700 transform scale-95 flex flex-col items-center">
+            
+            <div class="glass-card rounded-3xl p-8 sm:p-10 w-full shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-pink-200 rounded-full blur-2xl opacity-50"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-200 rounded-full blur-2xl opacity-50"></div>
+
+                <div class="relative z-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-pink-500 to-rose-400 rounded-2xl text-white text-2xl shadow-lg mb-6 animate-bounce">
+                        <i class="fa-solid fa-cake-candles"></i>
+                    </div>
+
+                    <h2 class="text-3xl sm:text-5xl font-bold font-pacifico text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-4">
+                        Happy Birthday!
+                    </h2>
+
+                    <p class="text-gray-600 text-base sm:text-lg leading-relaxed mb-8">
+                        祝你平安,健康, 梦想成真，每天都睡个好觉<br>
+                        祝你像自由的鸟，可以在讨厌的人头顶拉屎✨
+                    </p>
+
+                    <!-- Yay Button -->
+                    <button onclick="goToGallery()" class="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-300 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 rounded-2xl shadow-xl hover:shadow-pink-500/50 hover:scale-105 active:scale-95">
+                        <span class="absolute inset-0 w-full h-full rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        <span class="relative flex items-center text-lg">
+                            Yay! 开启回忆相册 <i class="fa-solid fa-arrow-right ml-3 group-hover:translate-x-1.5 transition-transform"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= PAGE 3: SLIDING PHOTO GALLERY ================= -->
+        <div id="pageGallery" class="w-full hidden opacity-0 transition-all duration-700 transform scale-95 flex flex-col items-center">
+            
+            <div class="w-full text-center mb-6">
+                <h2 class="text-2xl sm:text-3xl font-bold text-pink-600">记录美好时光</h2>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1">左右滑动浏览回忆，记录每一个平凡又特别的日子</p>
+            </div>
+
+            <!-- Sliding Gallery Container -->
+            <div class="relative w-full max-w-md mx-auto">
+                
+                <!-- Scrollable Track -->
+                <div id="sliderTrack" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 px-4 py-2 scroll-smooth">
+                    
+                    <!-- Photo Card 1 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-pink-100">
+                                <img src="img/img1.JPG" alt="Memory 1" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/fbcfe8/db2777?text=Photo+1'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">108块腹肌</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">愿你的身材永远火辣</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photo Card 2 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-purple-100">
+                                <img src="img/img2.JPG" alt="Memory 2" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/e9d5ff/9333ea?text=Photo+2'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">新故事开始的地方</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">闺蜜俩第一次来到UTS</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photo Card 3 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-pink-100">
+                                <img src="img/img3.JPG" alt="Memory 3" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/fed7aa/c2410c?text=Photo+3'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">闪光的梦想</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">勇敢去追逐你热爱的一切吧</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photo Card 4 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-teal-100">
+                                <img src="img/img4.JPG" alt="Memory 4" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/ccfbf1/0d9488?text=Photo+4'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">未来可期</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">祝你岁岁年年，万事皆如意</p>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Photo Card 5 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-teal-100">
+                                <img src="img/img5.JPG" alt="Memory 5" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/ccfbf1/0d9488?text=Photo+5'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">平安喜乐</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">愿所有的美好与温暖，都能在这个特别的日子如期而至</p>
+                            </div>
+                        </div>
+                    </div>
+ <!-- Photo Card 6 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-teal-100">
+                                <img src="img/img6.JPG" alt="Memory 6" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/ccfbf1/0d9488?text=Photo+6'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">前路漫漫</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">愿你眼里总有光芒，活成自己最喜欢的模样</p>
+                            </div>
+                        </div>
+                    </div>
+ <!-- Photo Card 7 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-teal-100">
+                                <img src="img/img7.JPG" alt="Memory 7" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/ccfbf1/0d9488?text=Photo+7'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">天天开心</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">愿你每天都笑得像个孩子，被温柔以待</p>
+                            </div>
+                        </div>
+                    </div>
+
+ <!-- Photo Card 8 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-teal-100">
+                                <img src="img/img8.JPG" alt="Memory 8" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/ccfbf1/0d9488?text=Photo+8'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">好运常伴</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">把烦恼清零，让快乐加倍，开启全新的美好旅程</p>
+                            </div>
+                        </div>
+                    </div>
+ <!-- Photo Card 9 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-teal-100">
+                                <img src="img/img9.JPG" alt="Memory 9" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/ccfbf1/0d9488?text=Photo+9'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">友谊长存</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">愿我们的友谊长长久久,新的一岁继续一起发光</p>
+                            </div>
+                        </div>
+                    </div>
+ <!-- Photo Card 10 -->
+                    <div class="flex-shrink-0 w-72 sm:w-80 snap-center">
+                        <div class="glass-card rounded-3xl p-3 shadow-xl transition transform hover:scale-[1.02]">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-teal-100">
+                                <img src="img/img10.JPG" alt="Memory 10" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/ccfbf1/0d9488?text=Photo+10'">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="font-bold text-gray-800 text-sm">顶峰相见</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">愿你奔跑在自己的热爱里，前路漫漫亦灿烂</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Navigation Arrow Buttons -->
+                <button onclick="scrollGallery(-1)" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-3 sm:-ml-5 w-10 h-10 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center text-pink-600 hover:bg-pink-50 transition z-10">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button onclick="scrollGallery(1)" class="absolute right-0 top-1/2 -translate-y-1/2 -mr-3 sm:-mr-5 w-10 h-10 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center text-pink-600 hover:bg-pink-50 transition z-10">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Dots Indicator -->
+            <div class="flex justify-center items-center space-x-2 mt-4" id="sliderDots">
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-500 transition-all duration-300"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300"></span>
+            </div>
+
+            <!-- Back to Cake Page Button -->
+            <div class="mt-8">
+                <button onclick="resetToCakePage()" class="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur border border-pink-200 hover:bg-pink-50 text-pink-600 font-medium rounded-xl shadow-md transition transform hover:scale-105">
+                    <i class="fa-solid fa-rotate-left mr-2"></i> 返回
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let clickCount = 0;
+        const targetClicks = 10;
+        let isExploded = false;
+
+        const cakeElement = document.getElementById('cakeElement');
+        const progressBar = document.getElementById('progressBar');
+        const clickCounterText = document.getElementById('clickCounterText');
+        const pageCake = document.getElementById('pageCake');
+        const pageGreeting = document.getElementById('pageGreeting');
+        const pageGallery = document.getElementById('pageGallery');
+
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, isConfetti = false) {
+                this.x = x;
+                this.y = y;
+                this.isConfetti = isConfetti;
+                
+                if (isConfetti) {
+                    this.vx = (Math.random() - 0.5) * 8;
+                    this.vy = Math.random() * -12 - 2;
+                    this.gravity = 0.25;
+                    this.rotation = Math.random() * 360;
+                    this.rotationSpeed = (Math.random() - 0.5) * 10;
+                    this.w = Math.random() * 12 + 6;
+                    this.h = Math.random() * 8 + 4;
+                    this.color = ['#f43f5e', '#fbbf24', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981'][Math.floor(Math.random() * 6)];
+                } else {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 12 + 4;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.gravity = 0.4;
+                    this.radius = Math.random() * 6 + 3;
+                    this.color = ['#F43F5E', '#FBBF24', '#EC4899', '#A78BFA', '#F472B6'][Math.floor(Math.random() * 5)];
+                }
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.008;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += this.gravity;
+                if (this.isConfetti) {
+                    this.rotation += this.rotationSpeed;
+                    this.alpha -= 0.003;
+                } else {
+                    this.alpha -= this.decay;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                if (this.isConfetti) {
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate((this.rotation * Math.PI) / 180);
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        function triggerExplosion() {
+            const rect = cakeElement.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 90; i++) {
+                particles.push(new Particle(centerX, centerY, false));
+            }
+            for (let i = 0; i < 120; i++) {
+                particles.push(new Particle(Math.random() * canvas.width, -20, true));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0 || particles[i].y > canvas.height + 50) {
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        function handleCakeClick() {
+            if (isExploded) return;
+
+            clickCount++;
+            const percentage = Math.min(100, (clickCount / targetClicks) * 100);
+            progressBar.style.width = percentage + '%';
+            clickCounterText.innerText = `已点击: ${clickCount} / ${targetClicks} 次`;
+
+            cakeElement.classList.add('cake-shake');
+            setTimeout(() => cakeElement.classList.remove('cake-shake'), 400);
+
+            if (clickCount >= targetClicks) {
+                isExploded = true;
+                triggerExplosion();
+
+                setTimeout(() => {
+                    pageCake.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        pageCake.classList.add('hidden');
+                        pageGreeting.classList.remove('hidden');
+                        setTimeout(() => {
+                            pageGreeting.classList.remove('opacity-0', 'scale-95');
+                        }, 50);
+                    }, 500);
+                }, 800);
+            }
+        }
+
+        function goToGallery() {
+            pageGreeting.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                pageGreeting.classList.add('hidden');
+                pageGallery.classList.remove('hidden');
+                setTimeout(() => {
+                    pageGallery.classList.remove('opacity-0', 'scale-95');
+                }, 50);
+            }, 500);
+        }
+
+        function resetToCakePage() {
+            clickCount = 0;
+            isExploded = false;
+            progressBar.style.width = '0%';
+            clickCounterText.innerText = `已点击: 0 / ${targetClicks} 次`;
+
+            pageGallery.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                pageGallery.classList.add('hidden');
+                pageCake.classList.remove('hidden');
+                setTimeout(() => {
+                    pageCake.classList.remove('opacity-0', 'scale-95');
+                }, 50);
+            }, 500);
+        }
+
+        const sliderTrack = document.getElementById('sliderTrack');
+        function scrollGallery(direction) {
+            const cardWidth = sliderTrack.querySelector('div').offsetWidth + 16;
+            sliderTrack.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
